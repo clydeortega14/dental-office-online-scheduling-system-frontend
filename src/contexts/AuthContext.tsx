@@ -12,6 +12,7 @@ interface AuthContextType extends AuthState {
 interface RegisterData {
   email: string;
   password: string;
+  name: string;
   firstName: string;
   lastName: string;
   phone: string;
@@ -24,6 +25,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const mockUser: User = {
   id: '1',
   email: 'john.doe@example.com',
+  name: 'John Doe',
   firstName: 'John',
   lastName: 'Doe',
   phone: '(555) 123-4567',
@@ -90,65 +92,99 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return false;
   };
 
-  const register = async (userData: RegisterData): Promise<boolean> => {
+  const register = (data: RegisterData): Promise<boolean> => {
     setAuthState(prev => ({ ...prev, isLoading: true }));
+
+    return new Promise((resolve, reject) => {
+      setTimeout( () => {
+      
+        const base_url = import.meta.env.VITE_API_URL;
+
+        // request API Call to nodejs backend
+        axios.post(`${base_url}/auth/register`, {
+          withCredentials: true,
+          name: `${data.name}`,
+          email: data.email,
+          password: data.password
+        }).
+        then(response => {
+          if(response.status === 201 || response.status === 200)
+          {
+              resolve(true);
+
+              const newUser: User = {
+                id: Date.now().toString(),
+                email: data.email,
+                name: data.name,
+                firstName: data.name,
+                lastName: data.name,
+                phone: '',
+                dateOfBirth: '',
+                address: '',
+                emergencyContact: {
+                  name: '',
+                  phone: '',
+                  relationship: ''
+                },
+                medicalHistory: {
+                  allergies: [],
+                  medications: [],
+                  conditions: []
+                },
+                insurance: {
+                  provider: '',
+                  policyNumber: ''
+                },
+                createdAt: new Date().toISOString(),
+                lastLogin: new Date().toISOString()
+              };
+
+              localStorage.setItem('dental_user', JSON.stringify(newUser));
+              setAuthState({
+                user: newUser,
+                isAuthenticated: true,
+                isLoading: false
+              });
+          }
+        })
+        .catch(error => console.log(error));
+
+      }, 1000);
+    })
     
     // Simulate API call
-    await new Promise(resolve => {
+    // await new Promise(resolve => {
 
-      // request API Call to nodejs backend
-      axios.post(`http://localhost:3000/api/auth/register`, {
-        name: userData.name,
-        email: userData.email,
-        password: userData.password
-      })
-      .then(response => {
-        console.log(response)
-      })
-      .catch(error => {
-        console.log(error)
-      })
+      
+    //   .then(response => {
+    //     if(response.status === 200 || response.status === 201){
+
+    //       setTimeout(() => {
+    //         resolve
+    //         
+            
+    //         
+
+    //         
+    //         return true;
+
+    //       }, 1000);
+
+    //       // Mock registration - in real app, send to backend
+          
+    //     }
+    //   })
+    //   .catch(error => {
+    //     console.log(error)
+    //   })
 
 
-      // setTimeout(resolve, 1000)
-    });
-    // await new Promise(resolve => console.log(resolve));
+      
+    // });
+    // // await new Promise(resolve => console.log(resolve));
 
     
-    // Mock registration - in real app, send to backend
-    const newUser: User = {
-      id: Date.now().toString(),
-      email: userData.email,
-      firstName: userData.firstName,
-      lastName: userData.lastName,
-      phone: userData.phone,
-      dateOfBirth: userData.dateOfBirth,
-      address: '',
-      emergencyContact: {
-        name: '',
-        phone: '',
-        relationship: ''
-      },
-      medicalHistory: {
-        allergies: [],
-        medications: [],
-        conditions: []
-      },
-      insurance: {
-        provider: '',
-        policyNumber: ''
-      },
-      createdAt: new Date().toISOString(),
-      lastLogin: new Date().toISOString()
-    };
     
-    localStorage.setItem('dental_user', JSON.stringify(newUser));
-    setAuthState({
-      user: newUser,
-      isAuthenticated: true,
-      isLoading: false
-    });
-    return true;
   };
 
   const logout = () => {
