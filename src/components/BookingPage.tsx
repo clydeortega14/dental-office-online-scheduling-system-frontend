@@ -1,24 +1,32 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Calendar, Clock, User, Star, CheckCircle, ArrowLeft, ArrowRight } from 'lucide-react';
-import { dentists, services, timeSlots } from '../data/mockData';
+import { services, timeSlots } from '../data/mockData';
 import { Dentist, Service, TimeSlot } from '../types';
 import { useAppointment } from '../contexts/AppointMentContext';
+import { useAuth } from '../contexts/AuthContext';
+import { useDentist } from '../contexts/DentistContext';
 
 const BookingPage: React.FC = () => {
   const [step, setStep] = useState(1);
+  const { user } = useAuth();
   const [selectedDentist, setSelectedDentist] = useState<Dentist | null>(null);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [selectedTime, setSelectedTime] = useState<TimeSlot | null>(null);
   const [patientInfo, setPatientInfo] = useState({
-    name: '',
-    email: '',
+    name: user?.name || '',
+    email: user?.email || '',
     phone: '',
     notes: ''
   });
   const [isBooked, setIsBooked] = useState(false);
 
   const { storeAppointment } = useAppointment();
+  const {dentists, getAllDentists} = useDentist();
+
+  useEffect( () => {
+    getAllDentists();
+  }, [])
 
   const handleNextStep = () => {
     if (step < 4) setStep(step + 1);
@@ -38,21 +46,25 @@ const BookingPage: React.FC = () => {
         selectedTime?.time,
         selectedService?.name,
         selectedDentist?.id
-      );
-
-      // console.log([selectedDate, selectedTime, selectedService?.name, '1'])
+      )
+      .then(resolve_response => {
+        if(resolve_response){
+          setIsBooked(true);
+          setTimeout(() => {
+            setIsBooked(false);
+            // Reset form
+            setStep(1);
+            setSelectedDentist(null);
+            setSelectedService(null);
+            setSelectedDate('');
+            setSelectedTime(null);
+            setPatientInfo({ name: '', email: '', phone: '', notes: '' });
+          }, 3000);
+        }
+      })
+      .catch(error => console.log(error));
     }
-    // setIsBooked(true);
-    // setTimeout(() => {
-    //   setIsBooked(false);
-    //   // Reset form
-    //   setStep(1);
-    //   setSelectedDentist(null);
-    //   setSelectedService(null);
-    //   setSelectedDate('');
-    //   setSelectedTime(null);
-    //   setPatientInfo({ name: '', email: '', phone: '', notes: '' });
-    // }, 3000);
+    
   };
 
   const canProceedToNext = () => {

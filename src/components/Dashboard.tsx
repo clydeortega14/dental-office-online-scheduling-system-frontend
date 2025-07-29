@@ -6,7 +6,7 @@ const Dashboard: React.FC = () => {
   const [showCancelModal, setShowCancelModal] = useState<string | null>(null);
   const [showRescheduleModal, setShowRescheduleModal] = useState<string | null>(null);
 
-  const {getAppointments, appointments, setAppointments } = useAppointment();
+  const {getAppointments, appointments, setAppointments, cancelAppointment } = useAppointment();
 
   useEffect( () => {
     getAppointments()
@@ -38,15 +38,19 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const handleCancelAppointment = (appointmentId: string) => {
-    setAppointments(prev =>
-      prev.map(appointment =>
-        appointment.id === appointmentId
-          ? { ...appointment, status: 'cancelled' as const }
-          : appointment
-      )
-    );
-    setShowCancelModal(null);
+  const handleCancelAppointment = (appointmentId: number) => {
+
+    cancelAppointment(appointmentId)
+    .then(response => console.log(response))
+    .catch(error => console.log(error))
+    // setAppointments(prev =>
+    //   prev.map(appointment =>
+    //     appointment.id === appointmentId
+    //       ? { ...appointment, status: 'cancelled' as const }
+    //       : appointment
+    //   )
+    // );
+    // setShowCancelModal(null);
   };
 
   const handleRescheduleAppointment = (appointmentId: string, newDate: string, newTime: string) => {

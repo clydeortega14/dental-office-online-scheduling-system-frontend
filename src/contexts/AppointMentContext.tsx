@@ -13,8 +13,8 @@ interface IAppointment {
         time: string, 
         service: string, 
         dentistId: string
-    ) => void;
-    cancelAppointment: (appointmentId: number) => void;
+    ) => Promise;
+    cancelAppointment: (appointmentId: number) => Promise;
     rescheduleAppointment: (appointmentId: number) => void;
 }
 
@@ -29,6 +29,7 @@ export const AppointmentProvider = ({children}: {children: ReactNode}) => {
         try {
 
             const result = await axios.get(`appointments`);
+            
             if(result.status === 200)
             {
                 setAppointments(result.data)
@@ -40,27 +41,43 @@ export const AppointmentProvider = ({children}: {children: ReactNode}) => {
         
     }
 
-    const storeAppointment = async (
+    const storeAppointment = (
         date: string, 
         time: string, 
         service: string, 
         dentistId: number
     ) => {
 
-        try {
-            
-            const response = await axios.post(`appointments`, {
-                date,time,service,dentistId
+        return new Promise((resolve, reject) => {
+            setTimeout( () => {
+                axios.post(`appointments`, {
+                date,
+                time,
+                service,
+                dentistId
+            })
+            .then(response => {
+                resolve(true);
+            })
+            .catch(error => {
+                reject(true);
             });
-            
-        } catch (error) {
-            console.log(error);
-        }
+            }, 1000);
+        });
         
     }
 
     const cancelAppointment = (appointmentId: number) => {
-        console.log(appointmentId);
+
+        return new Promise((resolve, reject) => {
+            setTimeout( () => {
+                axios.patch(`cancel/appointment`, {
+                    appointmentid: appointmentId
+                })
+                .then(response => console.log(response))
+                .catch(error => console.log(error))
+            }, 1000)
+        });
     }
 
     const rescheduleAppointment = (appointmentId: number) => {
@@ -68,7 +85,7 @@ export const AppointmentProvider = ({children}: {children: ReactNode}) => {
     }
 
     return (
-        <AppointmentContext.Provider value={{ getAppointments, appointments, setAppointments, storeAppointment }}>
+        <AppointmentContext.Provider value={{ getAppointments, appointments, setAppointments, storeAppointment, cancelAppointment }}>
             {children}
         </AppointmentContext.Provider>
     )

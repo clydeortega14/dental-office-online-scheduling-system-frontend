@@ -84,7 +84,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         .then(res => {
           if(res.status === 200)
           {
-            const user = { ...mockUser, lastLogin: new Date().toISOString(), email, name: name, firstName: name, lastName: name };
+            const user = { ...mockUser, lastLogin: new Date().toISOString(), email, name: res.data.user.name };
             localStorage.setItem('dental_user', JSON.stringify(user));
             setAuthState({
               user,
