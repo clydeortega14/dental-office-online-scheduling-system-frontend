@@ -52,7 +52,7 @@ const Navigation: React.FC = () => {
             {isAuthenticated ? (
               <div className="flex items-center space-x-4">
                 <span className="hidden sm:block text-sm text-gray-600">
-                  Welcome, {user?.firstName}
+                  Welcome, {user?.email}
                 </span>
                 <button
                   onClick={handleLogout}

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Calendar, Clock, User, Star, CheckCircle, ArrowLeft, ArrowRight } from 'lucide-react';
 import { dentists, services, timeSlots } from '../data/mockData';
 import { Dentist, Service, TimeSlot } from '../types';
+import { useAppointment } from '../contexts/AppointMentContext';
 
 const BookingPage: React.FC = () => {
   const [step, setStep] = useState(1);
@@ -17,6 +18,8 @@ const BookingPage: React.FC = () => {
   });
   const [isBooked, setIsBooked] = useState(false);
 
+  const { storeAppointment } = useAppointment();
+
   const handleNextStep = () => {
     if (step < 4) setStep(step + 1);
   };
@@ -27,17 +30,29 @@ const BookingPage: React.FC = () => {
 
   const handleBookAppointment = () => {
     // Here you would typically send the data to your backend
-    setIsBooked(true);
-    setTimeout(() => {
-      setIsBooked(false);
-      // Reset form
-      setStep(1);
-      setSelectedDentist(null);
-      setSelectedService(null);
-      setSelectedDate('');
-      setSelectedTime(null);
-      setPatientInfo({ name: '', email: '', phone: '', notes: '' });
-    }, 3000);
+    if(selectedDate || selectedTime || selectedService)
+    {
+      
+      storeAppointment(
+        selectedDate,
+        selectedTime?.time,
+        selectedService?.id,
+        selectedDentist?.id
+      );
+
+      // console.log([selectedDate, selectedTime, selectedService?.name, '1'])
+    }
+    // setIsBooked(true);
+    // setTimeout(() => {
+    //   setIsBooked(false);
+    //   // Reset form
+    //   setStep(1);
+    //   setSelectedDentist(null);
+    //   setSelectedService(null);
+    //   setSelectedDate('');
+    //   setSelectedTime(null);
+    //   setPatientInfo({ name: '', email: '', phone: '', notes: '' });
+    // }, 3000);
   };
 
   const canProceedToNext = () => {

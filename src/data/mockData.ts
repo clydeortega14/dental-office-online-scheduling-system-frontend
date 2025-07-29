@@ -91,26 +91,26 @@ export const services: Service[] = [
 ];
 
 export const timeSlots = [
-  { id: "1", time: "9:00 AM", available: true },
-  { id: "2", time: "9:30 AM", available: false },
-  { id: "3", time: "10:00 AM", available: true },
-  { id: "4", time: "10:30 AM", available: true },
-  { id: "5", time: "11:00 AM", available: false },
-  { id: "6", time: "11:30 AM", available: true },
-  { id: "7", time: "1:00 PM", available: true },
-  { id: "8", time: "1:30 PM", available: true },
-  { id: "9", time: "2:00 PM", available: false },
-  { id: "10", time: "2:30 PM", available: true },
-  { id: "11", time: "3:00 PM", available: true },
-  { id: "12", time: "3:30 PM", available: true },
-  { id: "13", time: "4:00 PM", available: true },
-  { id: "14", time: "4:30 PM", available: false },
-  { id: "15", time: "5:00 PM", available: true }
+  { id: "1", time: "09:00:00", available: true },
+  { id: "2", time: "09:00:00", available: false },
+  { id: "3", time: "10:00:00", available: true },
+  { id: "4", time: "10:30:00", available: true },
+  { id: "5", time: "11:00:00", available: false },
+  { id: "6", time: "11:30:00", available: true },
+  { id: "7", time: "13:00:00", available: true },
+  { id: "8", time: "13:30:00", available: true },
+  { id: "9", time: "14:00:00", available: false },
+  { id: "10", time: "14:30:00", available: true },
+  { id: "11", time: "15:00:00", available: true },
+  { id: "12", time: "15:30:00", available: true },
+  { id: "13", time: "16:00:00", available: true },
+  { id: "14", time: "16:30:00", available: false },
+  { id: "15", time: "17:00:00", available: true }
 ];
 
 export const mockAppointments: Appointment[] = [
   {
-    id: "1",
+    id: 1,
     dentistId: "1",
     dentistName: "Dr. Sarah Johnson",
     service: "Regular Cleaning",
@@ -121,7 +121,7 @@ export const mockAppointments: Appointment[] = [
     patientEmail: "john@example.com"
   },
   {
-    id: "2",
+    id: 2,
     dentistId: "3",
     dentistName: "Dr. Emily Rodriguez",
     service: "Teeth Whitening",
@@ -132,7 +132,7 @@ export const mockAppointments: Appointment[] = [
     patientEmail: "john@example.com"
   },
   {
-    id: "3",
+    id: 2,
     dentistId: "2",
     dentistName: "Dr. Michael Chen",
     service: "Orthodontic Consultation",

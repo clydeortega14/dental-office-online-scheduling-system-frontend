@@ -25,6 +25,7 @@ const LoginPage: React.FC = () => {
     }
 
     const success = await login(formData.email, formData.password);
+    
     if (success) {
       setSuccess('Login successful! Redirecting...');
       setTimeout(() => navigate('/dashboard'), 1500);

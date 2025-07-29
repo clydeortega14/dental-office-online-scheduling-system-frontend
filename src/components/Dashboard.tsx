@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Calendar, Clock, User, Phone, Mail, CheckCircle, XCircle, AlertCircle, Edit3, Trash2 } from 'lucide-react';
-import { mockAppointments } from '../data/mockData';
-import { Appointment } from '../types';
-
+import { useAppointment } from '../contexts/AppointMentContext';
 const Dashboard: React.FC = () => {
-  const [appointments, setAppointments] = useState<Appointment[]>(mockAppointments);
+  
   const [showCancelModal, setShowCancelModal] = useState<string | null>(null);
   const [showRescheduleModal, setShowRescheduleModal] = useState<string | null>(null);
+
+  const {getAppointments, appointments, setAppointments } = useAppointment();
+
+  useEffect( () => {
+    getAppointments()
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {

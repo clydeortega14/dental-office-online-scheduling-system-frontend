@@ -1,5 +1,5 @@
 export interface Dentist {
-  id: string;
+  id: number;
   name: string;
   specialty: string;
   image: string;
@@ -23,7 +23,7 @@ export interface TimeSlot {
 }
 
 export interface Appointment {
-  id: string;
+  id: number;
   dentistId: string;
   dentistName: string;
   service: string;

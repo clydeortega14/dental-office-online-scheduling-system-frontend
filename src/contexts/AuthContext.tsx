@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, AuthState } from '../types';
-import axios from 'axios';
+import axios from '../config/axiosConfig';
 
 interface AuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<boolean>;
@@ -20,6 +20,7 @@ interface RegisterData {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const base_url = import.meta.env.VITE_API_URL;
 
 // Mock user data for demonstration
 const mockUser: User = {
@@ -74,31 +75,39 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setAuthState(prev => ({ ...prev, isLoading: true }));
     
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Mock authentication - in real app, validate against backend
-    if (email === 'john.doe@example.com' && password === 'password123') {
-      const user = { ...mockUser, lastLogin: new Date().toISOString() };
-      localStorage.setItem('dental_user', JSON.stringify(user));
-      setAuthState({
-        user,
-        isAuthenticated: true,
-        isLoading: false
-      });
-      return true;
-    }
-    
-    setAuthState(prev => ({ ...prev, isLoading: false }));
-    return false;
+    return await new Promise((resolve) => setTimeout( () => {
+
+        axios.post(`${base_url}/auth/login`, {
+          email,
+          password
+        })
+        .then(res => {
+          if(res.status === 200)
+          {
+            const user = { ...mockUser, lastLogin: new Date().toISOString(), email, name: name, firstName: name, lastName: name };
+            localStorage.setItem('dental_user', JSON.stringify(user));
+            setAuthState({
+              user,
+              isAuthenticated: true,
+              isLoading: false
+            });
+
+            resolve(true);
+          }
+        })
+        .catch(error => {
+          setAuthState(prev => ({ ...prev, isLoading: false }));
+          resolve(false);
+        });
+    }, 1000));
   };
 
   const register = (data: RegisterData): Promise<boolean> => {
+
     setAuthState(prev => ({ ...prev, isLoading: true }));
 
     return new Promise((resolve, reject) => {
       setTimeout( () => {
-      
-        const base_url = import.meta.env.VITE_API_URL;
 
         // request API Call to nodejs backend
         axios.post(`${base_url}/auth/register`, {
@@ -140,6 +149,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
               };
 
               localStorage.setItem('dental_user', JSON.stringify(newUser));
+
               setAuthState({
                 user: newUser,
                 isAuthenticated: true,
@@ -150,40 +160,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         .catch(error => console.log(error));
 
       }, 1000);
-    })
-    
-    // Simulate API call
-    // await new Promise(resolve => {
-
-      
-    //   .then(response => {
-    //     if(response.status === 200 || response.status === 201){
-
-    //       setTimeout(() => {
-    //         resolve
-    //         
-            
-    //         
-
-    //         
-    //         return true;
-
-    //       }, 1000);
-
-    //       // Mock registration - in real app, send to backend
-          
-    //     }
-    //   })
-    //   .catch(error => {
-    //     console.log(error)
-    //   })
-
-
-      
-    // });
-    // // await new Promise(resolve => console.log(resolve));
-
-    
+    });
     
   };
 
