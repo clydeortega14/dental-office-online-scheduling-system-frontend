@@ -36,7 +36,7 @@ const BookingPage: React.FC = () => {
       storeAppointment(
         selectedDate,
         selectedTime?.time,
-        selectedService?.id,
+        selectedService?.name,
         selectedDentist?.id
       );
 

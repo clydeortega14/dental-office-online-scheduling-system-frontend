@@ -52,12 +52,11 @@ export const AppointmentProvider = ({children}: {children: ReactNode}) => {
             const response = await axios.post(`appointments`, {
                 date,time,service,dentistId
             });
-            console.log(response);
             
         } catch (error) {
-            
+            console.log(error);
         }
-        console.log('store appointment');
+        
     }
 
     const cancelAppointment = (appointmentId: number) => {

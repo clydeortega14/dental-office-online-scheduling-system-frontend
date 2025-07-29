@@ -14,7 +14,7 @@ export const officeInfo: OfficeInfo = {
 
 export const dentists: Dentist[] = [
   {
-    id: "1",
+    id: 1,
     name: "Dr. Sarah Johnson",
     specialty: "General Dentistry",
     image: "https://images.pexels.com/photos/5215024/pexels-photo-5215024.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
@@ -22,7 +22,7 @@ export const dentists: Dentist[] = [
     rating: 4.9
   },
   {
-    id: "2",
+    id: 2,
     name: "Dr. Michael Chen",
     specialty: "Orthodontics",
     image: "https://images.pexels.com/photos/6627374/pexels-photo-6627374.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
@@ -30,7 +30,7 @@ export const dentists: Dentist[] = [
     rating: 4.8
   },
   {
-    id: "3",
+    id: 3,
     name: "Dr. Emily Rodriguez",
     specialty: "Cosmetic Dentistry",
     image: "https://images.pexels.com/photos/5327921/pexels-photo-5327921.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
