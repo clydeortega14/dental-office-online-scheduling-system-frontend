@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Calendar, Clock, User, Phone, Mail, CheckCircle, XCircle, AlertCircle, Edit3, Trash2 } from 'lucide-react';
 import { useAppointment } from '../contexts/AppointMentContext';
+import { toMySQLTimeFromString } from '../utils/timeFormatter';
 const Dashboard: React.FC = () => {
   
   const [showCancelModal, setShowCancelModal] = useState<string | null>(null);
   const [showRescheduleModal, setShowRescheduleModal] = useState<string | null>(null);
 
-  const {getAppointments, appointments, setAppointments, cancelAppointment } = useAppointment();
+  const {getAppointments, appointments, setAppointments, cancelAppointment, rescheduleAppointment } = useAppointment();
 
   useEffect( () => {
     getAppointments()
@@ -41,27 +42,54 @@ const Dashboard: React.FC = () => {
   const handleCancelAppointment = (appointmentId: number) => {
 
     cancelAppointment(appointmentId)
-    .then(response => console.log(response))
-    .catch(error => console.log(error))
-    // setAppointments(prev =>
-    //   prev.map(appointment =>
-    //     appointment.id === appointmentId
-    //       ? { ...appointment, status: 'cancelled' as const }
-    //       : appointment
-    //   )
-    // );
-    // setShowCancelModal(null);
+    .then(response => {
+      if(response){
+        setAppointments(prev =>
+          prev.map(appointment =>
+            appointment.id === appointmentId
+              ? { ...appointment, status: 'cancelled' as const }
+              : appointment
+          )
+        );
+        setShowCancelModal(null);
+      }
+    })
+    .catch(error => {
+      if(error.status === 500)
+      {
+        alert(error.message);
+      }
+    })
   };
 
-  const handleRescheduleAppointment = (appointmentId: string, newDate: string, newTime: string) => {
-    setAppointments(prev =>
-      prev.map(appointment =>
-        appointment.id === appointmentId
-          ? { ...appointment, date: newDate, time: newTime, status: 'pending' as const }
-          : appointment
-      )
-    );
-    setShowRescheduleModal(null);
+  const handleRescheduleAppointment = (appointmentId: number, newDate: string, newTime: string) => {
+
+    const converTimeToMysqlTime = toMySQLTimeFromString(newTime);
+    
+    rescheduleAppointment(
+      appointmentId,
+      newDate,
+      converTimeToMysqlTime
+    )
+    .then(response => {
+      if(response) {
+        setAppointments(prev =>
+          prev.map(appointment =>
+            appointment.id === appointmentId
+              ? { ...appointment, date: newDate, time: newTime, status: 'rescheduled' as const }
+              : appointment
+          )
+        );
+        setShowRescheduleModal(null);
+      }
+    })
+    .catch(error => {
+      if(error.status === 500)
+      {
+        alert(error.message);
+      }
+    });
+    
   };
 
   const upcomingAppointments = appointments.filter(app => app.status !== 'cancelled');

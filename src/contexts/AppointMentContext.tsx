@@ -15,7 +15,7 @@ interface IAppointment {
         dentistId: string
     ) => Promise;
     cancelAppointment: (appointmentId: number) => Promise;
-    rescheduleAppointment: (appointmentId: number) => void;
+    rescheduleAppointment: (appointmentId: number, resched_date: string, resched_time: string) => Promise;
 }
 
 const AppointmentContext = createContext<IAppointment | undefined>(undefined);
@@ -51,17 +51,17 @@ export const AppointmentProvider = ({children}: {children: ReactNode}) => {
         return new Promise((resolve, reject) => {
             setTimeout( () => {
                 axios.post(`appointments`, {
-                date,
-                time,
-                service,
-                dentistId
-            })
-            .then(response => {
-                resolve(true);
-            })
-            .catch(error => {
-                reject(true);
-            });
+                    date,
+                    time,
+                    service,
+                    dentistId
+                })
+                .then(response => {
+                    resolve(true);
+                })
+                .catch(error => {
+                    reject(error);
+                });
             }, 1000);
         });
         
@@ -71,22 +71,54 @@ export const AppointmentProvider = ({children}: {children: ReactNode}) => {
 
         return new Promise((resolve, reject) => {
             setTimeout( () => {
-                axios.patch(`cancel/appointment`, {
-                    appointmentid: appointmentId
+                axios.patch(`appointments/cancel`, {
+                    appointmentId
                 })
-                .then(response => console.log(response))
-                .catch(error => console.log(error))
+                .then(response => {
+                    if(response.status === 200){
+                        resolve(true);
+                    }
+                })
+                .catch(error => {
+                    reject(error);
+                })
             }, 1000)
         });
     }
 
-    const rescheduleAppointment = (appointmentId: number) => {
-        console.log(appointmentId);
+    const rescheduleAppointment = (
+        appointmentId: number,
+        resched_date: string,
+        resched_time: string
+    ) => {
+        
+        return new Promise( (resolve, reject) => {
+            setTimeout( () => {
+                axios.patch(`appointments/reschedule`, {
+                    appointmentId,
+                    resched_date,
+                    resched_time
+                })
+                .then(response => {
+                    if(response.status === 200){
+                        resolve(true);
+                    }
+                })
+                .catch(error => reject(error))
+            }, 1000);
+        });
     }
 
     return (
-        <AppointmentContext.Provider value={{ getAppointments, appointments, setAppointments, storeAppointment, cancelAppointment }}>
-            {children}
+        <AppointmentContext.Provider value={{ 
+            getAppointments, 
+            appointments, 
+            setAppointments, 
+            storeAppointment, 
+            cancelAppointment,
+            rescheduleAppointment
+            }}>
+                {children}
         </AppointmentContext.Provider>
     )
 }
