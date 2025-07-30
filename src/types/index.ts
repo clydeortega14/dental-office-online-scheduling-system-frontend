@@ -29,7 +29,7 @@ export interface Appointment {
   service: string;
   date: string;
   time: string;
-  status: 'confirmed' | 'pending' | 'cancelled' | 'rescheduled';
+  status: 'confirmed' | 'pending' | 'cancelled' | 'rescheduled' | 'compeleted';
   patientName: string;
   patientEmail: string;
 }

@@ -16,6 +16,7 @@ interface IAppointment {
     ) => Promise;
     cancelAppointment: (appointmentId: number) => Promise;
     rescheduleAppointment: (appointmentId: number, resched_date: string, resched_time: string) => Promise;
+    confirmedAppointment: (appointmentId: number) => Promise;
 }
 
 const AppointmentContext = createContext<IAppointment | undefined>(undefined);
@@ -109,6 +110,22 @@ export const AppointmentProvider = ({children}: {children: ReactNode}) => {
         });
     }
 
+    const confirmedAppointment = (appointmentId: number) => {
+        return new Promise((resolve, reject) => {
+            setTimeout( () => {
+                axios.patch(`appointments/confirmed`, {
+                    appointmentId
+                })
+                .then(res => {
+                    if(res.status === 200){
+                        resolve(true)
+                    }
+                })
+                .catch(error => reject(error))
+            })
+        })
+    }
+
     return (
         <AppointmentContext.Provider value={{ 
             getAppointments, 
@@ -116,7 +133,8 @@ export const AppointmentProvider = ({children}: {children: ReactNode}) => {
             setAppointments, 
             storeAppointment, 
             cancelAppointment,
-            rescheduleAppointment
+            rescheduleAppointment,
+            confirmedAppointment
             }}>
                 {children}
         </AppointmentContext.Provider>

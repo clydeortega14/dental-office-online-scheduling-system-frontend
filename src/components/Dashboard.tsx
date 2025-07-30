@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Calendar, Clock, User, Phone, Mail, CheckCircle, XCircle, AlertCircle, Edit3, Trash2 } from 'lucide-react';
+import { Calendar, Clock, User, Phone, Mail, CheckCircle, XCircle, AlertCircle, Edit3, Trash2, ThumbsUp  } from 'lucide-react';
 import { useAppointment } from '../contexts/AppointMentContext';
 import { toMySQLTimeFromString } from '../utils/timeFormatter';
+import AppointmentConfirmModal from './modals/AppointmentConfirmModal';
 const Dashboard: React.FC = () => {
   
-  const [showCancelModal, setShowCancelModal] = useState<string | null>(null);
-  const [showRescheduleModal, setShowRescheduleModal] = useState<string | null>(null);
+  const [showCancelModal, setShowCancelModal] = useState<number | null>(null);
+  const [showRescheduleModal, setShowRescheduleModal] = useState<number | null>(null);
+  const [showConfirmedModal, setShowConfirmedModal] = useState<number | null>(null);
 
   const {getAppointments, appointments, setAppointments, cancelAppointment, rescheduleAppointment } = useAppointment();
 
@@ -215,6 +217,13 @@ const Dashboard: React.FC = () => {
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
+                        <button
+                          onClick={() => setShowConfirmedModal(appointment.id)}
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="Confirmed"
+                        >
+                          <ThumbsUp className="h-4 w-4" />
+                        </button>
                       </div>
                     )}
                   </div>
@@ -292,6 +301,13 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
         )}
+
+        {/* Confirmed Modal */}
+        { showConfirmedModal && <AppointmentConfirmModal 
+                                  showConfirmedModal={showConfirmedModal}
+                                  setShowConfirmedModal={setShowConfirmedModal}
+                                />}
+        
 
         {/* Reschedule Modal */}
         {showRescheduleModal && (
