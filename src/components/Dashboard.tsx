@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Calendar, Clock, User, Phone, Mail, CheckCircle, XCircle, AlertCircle, Edit3, Trash2, ThumbsUp  } from 'lucide-react';
+import { Calendar, Clock, User, Phone, Mail, CheckCircle, XCircle, AlertCircle, Edit3, Trash2, ThumbsUp, Check } from 'lucide-react';
 import { useAppointment } from '../contexts/AppointMentContext';
 import { toMySQLTimeFromString } from '../utils/timeFormatter';
 import AppointmentConfirmModal from './modals/AppointmentConfirmModal';
+import AppointmentCompleteModal from './modals/AppointmentCompleteModal';
 const Dashboard: React.FC = () => {
   
   const [showCancelModal, setShowCancelModal] = useState<number | null>(null);
   const [showRescheduleModal, setShowRescheduleModal] = useState<number | null>(null);
   const [showConfirmedModal, setShowConfirmedModal] = useState<number | null>(null);
+  const [showCompleteModal, setShowCompleteModal] = useState<number | null>(null);
 
   const {getAppointments, appointments, setAppointments, cancelAppointment, rescheduleAppointment } = useAppointment();
 
@@ -219,10 +221,17 @@ const Dashboard: React.FC = () => {
                         </button>
                         <button
                           onClick={() => setShowConfirmedModal(appointment.id)}
-                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                           title="Confirmed"
                         >
                           <ThumbsUp className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => setShowCompleteModal(appointment.id)}
+                          className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                          title="Confirmed"
+                        >
+                          <Check  className="h-4 w-4" />
                         </button>
                       </div>
                     )}
@@ -306,7 +315,15 @@ const Dashboard: React.FC = () => {
         { showConfirmedModal && <AppointmentConfirmModal 
                                   showConfirmedModal={showConfirmedModal}
                                   setShowConfirmedModal={setShowConfirmedModal}
-                                />}
+                                />
+        }
+
+        {/* Complete Modal */}
+        { showCompleteModal && <AppointmentCompleteModal 
+                                    showCompleteModal={showCompleteModal}
+                                    setShowCompleteModal={setShowCompleteModal}
+                                />
+        }
         
 
         {/* Reschedule Modal */}

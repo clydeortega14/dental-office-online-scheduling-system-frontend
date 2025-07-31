@@ -12,11 +12,12 @@ interface IAppointment {
         date: string, 
         time: string, 
         service: string, 
-        dentistId: string
+        dentistId: number
     ) => Promise;
     cancelAppointment: (appointmentId: number) => Promise;
     rescheduleAppointment: (appointmentId: number, resched_date: string, resched_time: string) => Promise;
     confirmedAppointment: (appointmentId: number) => Promise;
+    completeAppointment: (appointmentId: number) => Promise;
 }
 
 const AppointmentContext = createContext<IAppointment | undefined>(undefined);
@@ -122,7 +123,19 @@ export const AppointmentProvider = ({children}: {children: ReactNode}) => {
                     }
                 })
                 .catch(error => reject(error))
-            })
+            }, 1000);
+        })
+    }
+
+    const completeAppointment = (appointmentId: number) => {
+        return new Promise((resolve, reject) => {
+            setTimeout( () => {
+                axios.patch(`appointments/complete`, {
+                    appointmentId
+                })
+                .then(res => resolve(res))
+                .catch(err => reject(err))
+            }, 1000)
         })
     }
 
@@ -134,7 +147,8 @@ export const AppointmentProvider = ({children}: {children: ReactNode}) => {
             storeAppointment, 
             cancelAppointment,
             rescheduleAppointment,
-            confirmedAppointment
+            confirmedAppointment,
+            completeAppointment
             }}>
                 {children}
         </AppointmentContext.Provider>
