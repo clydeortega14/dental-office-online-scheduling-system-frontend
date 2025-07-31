@@ -115,5 +115,3 @@ nodemon server.js OR node server.js
 ![Appointment Page 02](./public/images/pickdatetime.png).
 ![Appointment Page 02](./public/images/confirmdetails.png).
 ![Appointment Page 02](./public/images/appointmentbook.png).
-
-
