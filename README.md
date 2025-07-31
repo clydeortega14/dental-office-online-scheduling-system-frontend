@@ -56,8 +56,8 @@ cd dental-office-online-scheduling-system-frontend
 #### Create a .env file
 ```bash
 
-VITE_API_URL=https://api.rent-hive.co/api
-VITE_APP_NAME=DENTALAPP
+VITE_API_URL=
+VITE_APP_NAME=
 ```
 #### install npm and run dev
 ```bash
