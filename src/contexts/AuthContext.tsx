@@ -21,7 +21,7 @@ interface RegisterData {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const base_url = import.meta.env.VITE_API_URL;
-
+console.log(base_url)
 // Mock user data for demonstration
 const mockUser: User = {
   id: '1',
