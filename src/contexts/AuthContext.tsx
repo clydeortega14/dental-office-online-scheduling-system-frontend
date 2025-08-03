@@ -165,32 +165,70 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const logout = () => {
-    localStorage.removeItem('dental_user');
-    setAuthState({
-      user: null,
-      isAuthenticated: false,
-      isLoading: false
+
+    return new Promise((resolve, reject) => {
+      axios.post(`${base_url}/auth/logout`)
+        .then(response => {
+          if(response.status === 200){
+            localStorage.removeItem('dental_user');
+            setAuthState({
+              user: null,
+              isAuthenticated: false,
+              isLoading: false
+            });
+          }
+          resolve(response);
+        })
+        .catch(err => {
+          reject(err)
+        });
     });
+
+
+    
   };
 
-  const updateProfile = async (userData: Partial<User>): Promise<boolean> => {
+  const updateProfile = (userData: Partial<User>) => {
+
     if (!authState.user) return false;
     
     setAuthState(prev => ({ ...prev, isLoading: true }));
     
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const updatedUser = { ...authState.user, ...userData };
-    localStorage.setItem('dental_user', JSON.stringify(updatedUser));
-    
-    setAuthState({
-      user: updatedUser,
-      isAuthenticated: true,
-      isLoading: false
+    return new Promise((resolve, reject) => {
+
+      setTimeout( () => {
+
+        axios.post(`${base_url}/auth/update/profile`, {
+          newName: userData.name,
+          newEmail: userData.email
+        })
+        .then(response => {
+          if(response.status === 200)
+          {
+              const updatedUser = { ...authState.user, ...userData };
+              localStorage.setItem('dental_user', JSON.stringify(updatedUser));
+              
+              setAuthState({
+                user: updatedUser,
+                isAuthenticated: true,
+                isLoading: false
+              });
+
+              resolve(response)
+          }
+        })
+        .catch(error => {
+          if(error.status === 500)
+          {
+              reject(error)
+          }
+          
+        })
+
+      }, 1000)
+
     });
-    
-    return true;
   };
 
   return (

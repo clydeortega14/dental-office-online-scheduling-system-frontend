@@ -20,11 +20,15 @@ const Dashboard: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'confirmed':
-        return 'bg-green-100 text-green-800 border-green-200';
+        return 'bg-fuchsia-100 text-fuchsia-800 border-fuchsia-200';
       case 'pending':
         return 'bg-yellow-100 text-yellow-800 border-yellow-200';
       case 'cancelled':
         return 'bg-red-100 text-red-800 border-red-200';
+      case 'completed':
+        return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+      case 'rescheduled':
+        return 'bg-sky-100 text-sky-800 border-sky-200';
       default:
         return 'bg-gray-100 text-gray-800 border-gray-200';
     }
@@ -33,11 +37,13 @@ const Dashboard: React.FC = () => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'confirmed':
-        return <CheckCircle className="h-4 w-4" />;
+        return <ThumbsUp className="h-4 w-4" />;
       case 'pending':
         return <AlertCircle className="h-4 w-4" />;
       case 'cancelled':
         return <XCircle className="h-4 w-4" />;
+      case 'completed':
+        return <Check className="h-4 w-4" />;
       default:
         return <AlertCircle className="h-4 w-4" />;
     }

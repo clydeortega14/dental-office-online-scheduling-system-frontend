@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Mail, Phone, Calendar, MapPin, Heart, Shield, Edit3, Save, X, AlertCircle, CheckCircle } from 'lucide-react';
+import { User, Edit3, Save, X, AlertCircle, CheckCircle } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 const ProfilePage: React.FC = () => {
@@ -9,102 +9,38 @@ const ProfilePage: React.FC = () => {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   
   const [formData, setFormData] = useState({
-    firstName: user?.firstName || '',
-    lastName: user?.lastName || '',
+    name: user?.name || '',
     email: user?.email || '',
-    phone: user?.phone || '',
-    dateOfBirth: user?.dateOfBirth || '',
-    address: user?.address || '',
-    emergencyContact: {
-      name: user?.emergencyContact.name || '',
-      phone: user?.emergencyContact.phone || '',
-      relationship: user?.emergencyContact.relationship || ''
-    },
-    medicalHistory: {
-      allergies: user?.medicalHistory.allergies || [],
-      medications: user?.medicalHistory.medications || [],
-      conditions: user?.medicalHistory.conditions || []
-    },
-    insurance: {
-      provider: user?.insurance.provider || '',
-      policyNumber: user?.insurance.policyNumber || ''
-    }
   });
 
-  const [newAllergy, setNewAllergy] = useState('');
-  const [newMedication, setNewMedication] = useState('');
-  const [newCondition, setNewCondition] = useState('');
-
-  const handleSave = async () => {
+  const handleSave = () => {
     setMessage(null);
-    const success = await updateProfile(formData);
-    if (success) {
-      setMessage({ type: 'success', text: 'Profile updated successfully!' });
-      setIsEditing(false);
-      setTimeout(() => setMessage(null), 3000);
-    } else {
-      setMessage({ type: 'error', text: 'Failed to update profile. Please try again.' });
-    }
+    updateProfile(formData)
+    .then(res => {
+      if(res.status === 200){
+        setMessage({ type: 'success', text: 'Profile updated successfully!' });
+        setIsEditing(false);
+        setTimeout(() => setMessage(null), 3000);
+      }else{
+        setMessage({ type: 'error', text: 'Failed to update profile. Please try again.' });
+      }
+    })
+    .catch(err =>{
+      setMessage({type: 'error', text: err.message})
+    });
   };
 
   const handleCancel = () => {
     setFormData({
-      firstName: user?.firstName || '',
-      lastName: user?.lastName || '',
+      name: user?.name || '',
       email: user?.email || '',
-      phone: user?.phone || '',
-      dateOfBirth: user?.dateOfBirth || '',
-      address: user?.address || '',
-      emergencyContact: {
-        name: user?.emergencyContact.name || '',
-        phone: user?.emergencyContact.phone || '',
-        relationship: user?.emergencyContact.relationship || ''
-      },
-      medicalHistory: {
-        allergies: user?.medicalHistory.allergies || [],
-        medications: user?.medicalHistory.medications || [],
-        conditions: user?.medicalHistory.conditions || []
-      },
-      insurance: {
-        provider: user?.insurance.provider || '',
-        policyNumber: user?.insurance.policyNumber || ''
-      }
     });
     setIsEditing(false);
     setMessage(null);
   };
 
-  const addToMedicalHistory = (type: 'allergies' | 'medications' | 'conditions', value: string) => {
-    if (!value.trim()) return;
-    
-    setFormData(prev => ({
-      ...prev,
-      medicalHistory: {
-        ...prev.medicalHistory,
-        [type]: [...prev.medicalHistory[type], value.trim()]
-      }
-    }));
-    
-    if (type === 'allergies') setNewAllergy('');
-    if (type === 'medications') setNewMedication('');
-    if (type === 'conditions') setNewCondition('');
-  };
-
-  const removeFromMedicalHistory = (type: 'allergies' | 'medications' | 'conditions', index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      medicalHistory: {
-        ...prev.medicalHistory,
-        [type]: prev.medicalHistory[type].filter((_, i) => i !== index)
-      }
-    }));
-  };
-
   const tabs = [
     { id: 'personal', label: 'Personal Info', icon: User },
-    { id: 'emergency', label: 'Emergency Contact', icon: Phone },
-    { id: 'medical', label: 'Medical History', icon: Heart },
-    { id: 'insurance', label: 'Insurance', icon: Shield }
   ];
 
   if (!user) {
@@ -130,7 +66,7 @@ const ProfilePage: React.FC = () => {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">
-                  {user.firstName} {user.lastName}
+                  {user.name}
                 </h1>
                 <p className="text-gray-600">{user.email}</p>
                 <p className="text-sm text-gray-500">
@@ -220,33 +156,17 @@ const ProfilePage: React.FC = () => {
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      First Name
+                      Name
                     </label>
                     {isEditing ? (
                       <input
                         type="text"
-                        value={formData.firstName}
-                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
                       />
                     ) : (
-                      <p className="text-gray-900">{user.firstName}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Last Name
-                    </label>
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        value={formData.lastName}
-                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                      />
-                    ) : (
-                      <p className="text-gray-900">{user.lastName}</p>
+                      <p className="text-gray-900">{user.name}</p>
                     )}
                   </div>
 
@@ -263,313 +183,6 @@ const ProfilePage: React.FC = () => {
                       />
                     ) : (
                       <p className="text-gray-900">{user.email}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Phone Number
-                    </label>
-                    {isEditing ? (
-                      <input
-                        type="tel"
-                        value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                      />
-                    ) : (
-                      <p className="text-gray-900">{user.phone}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Date of Birth
-                    </label>
-                    {isEditing ? (
-                      <input
-                        type="date"
-                        value={formData.dateOfBirth}
-                        onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                      />
-                    ) : (
-                      <p className="text-gray-900">{new Date(user.dateOfBirth).toLocaleDateString()}</p>
-                    )}
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Address
-                    </label>
-                    {isEditing ? (
-                      <textarea
-                        value={formData.address}
-                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                        rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                        placeholder="Enter your full address"
-                      />
-                    ) : (
-                      <p className="text-gray-900">{user.address || 'Not provided'}</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Emergency Contact Tab */}
-            {activeTab === 'emergency' && (
-              <div className="space-y-6">
-                <h3 className="text-lg font-semibold text-gray-900">Emergency Contact</h3>
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Contact Name
-                    </label>
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        value={formData.emergencyContact.name}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          emergencyContact: { ...formData.emergencyContact, name: e.target.value }
-                        })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                        placeholder="Emergency contact name"
-                      />
-                    ) : (
-                      <p className="text-gray-900">{user.emergencyContact.name || 'Not provided'}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Phone Number
-                    </label>
-                    {isEditing ? (
-                      <input
-                        type="tel"
-                        value={formData.emergencyContact.phone}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          emergencyContact: { ...formData.emergencyContact, phone: e.target.value }
-                        })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                        placeholder="Emergency contact phone"
-                      />
-                    ) : (
-                      <p className="text-gray-900">{user.emergencyContact.phone || 'Not provided'}</p>
-                    )}
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Relationship
-                    </label>
-                    {isEditing ? (
-                      <select
-                        value={formData.emergencyContact.relationship}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          emergencyContact: { ...formData.emergencyContact, relationship: e.target.value }
-                        })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                      >
-                        <option value="">Select relationship</option>
-                        <option value="Spouse">Spouse</option>
-                        <option value="Parent">Parent</option>
-                        <option value="Child">Child</option>
-                        <option value="Sibling">Sibling</option>
-                        <option value="Friend">Friend</option>
-                        <option value="Other">Other</option>
-                      </select>
-                    ) : (
-                      <p className="text-gray-900">{user.emergencyContact.relationship || 'Not provided'}</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Medical History Tab */}
-            {activeTab === 'medical' && (
-              <div className="space-y-6">
-                <h3 className="text-lg font-semibold text-gray-900">Medical History</h3>
-                
-                {/* Allergies */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Allergies
-                  </label>
-                  <div className="space-y-2">
-                    {formData.medicalHistory.allergies.map((allergy, index) => (
-                      <div key={index} className="flex items-center justify-between bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-                        <span className="text-red-800">{allergy}</span>
-                        {isEditing && (
-                          <button
-                            onClick={() => removeFromMedicalHistory('allergies', index)}
-                            className="text-red-600 hover:text-red-800"
-                          >
-                            <X className="h-4 w-4" />
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                    {isEditing && (
-                      <div className="flex space-x-2">
-                        <input
-                          type="text"
-                          value={newAllergy}
-                          onChange={(e) => setNewAllergy(e.target.value)}
-                          placeholder="Add new allergy"
-                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                          onKeyPress={(e) => e.key === 'Enter' && addToMedicalHistory('allergies', newAllergy)}
-                        />
-                        <button
-                          onClick={() => addToMedicalHistory('allergies', newAllergy)}
-                          className="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700"
-                        >
-                          Add
-                        </button>
-                      </div>
-                    )}
-                    {formData.medicalHistory.allergies.length === 0 && !isEditing && (
-                      <p className="text-gray-500 italic">No allergies recorded</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Medications */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Current Medications
-                  </label>
-                  <div className="space-y-2">
-                    {formData.medicalHistory.medications.map((medication, index) => (
-                      <div key={index} className="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
-                        <span className="text-blue-800">{medication}</span>
-                        {isEditing && (
-                          <button
-                            onClick={() => removeFromMedicalHistory('medications', index)}
-                            className="text-blue-600 hover:text-blue-800"
-                          >
-                            <X className="h-4 w-4" />
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                    {isEditing && (
-                      <div className="flex space-x-2">
-                        <input
-                          type="text"
-                          value={newMedication}
-                          onChange={(e) => setNewMedication(e.target.value)}
-                          placeholder="Add new medication"
-                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                          onKeyPress={(e) => e.key === 'Enter' && addToMedicalHistory('medications', newMedication)}
-                        />
-                        <button
-                          onClick={() => addToMedicalHistory('medications', newMedication)}
-                          className="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700"
-                        >
-                          Add
-                        </button>
-                      </div>
-                    )}
-                    {formData.medicalHistory.medications.length === 0 && !isEditing && (
-                      <p className="text-gray-500 italic">No medications recorded</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Medical Conditions */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Medical Conditions
-                  </label>
-                  <div className="space-y-2">
-                    {formData.medicalHistory.conditions.map((condition, index) => (
-                      <div key={index} className="flex items-center justify-between bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2">
-                        <span className="text-yellow-800">{condition}</span>
-                        {isEditing && (
-                          <button
-                            onClick={() => removeFromMedicalHistory('conditions', index)}
-                            className="text-yellow-600 hover:text-yellow-800"
-                          >
-                            <X className="h-4 w-4" />
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                    {isEditing && (
-                      <div className="flex space-x-2">
-                        <input
-                          type="text"
-                          value={newCondition}
-                          onChange={(e) => setNewCondition(e.target.value)}
-                          placeholder="Add new condition"
-                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                          onKeyPress={(e) => e.key === 'Enter' && addToMedicalHistory('conditions', newCondition)}
-                        />
-                        <button
-                          onClick={() => addToMedicalHistory('conditions', newCondition)}
-                          className="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700"
-                        >
-                          Add
-                        </button>
-                      </div>
-                    )}
-                    {formData.medicalHistory.conditions.length === 0 && !isEditing && (
-                      <p className="text-gray-500 italic">No conditions recorded</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Insurance Tab */}
-            {activeTab === 'insurance' && (
-              <div className="space-y-6">
-                <h3 className="text-lg font-semibold text-gray-900">Insurance Information</h3>
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Insurance Provider
-                    </label>
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        value={formData.insurance.provider}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          insurance: { ...formData.insurance, provider: e.target.value }
-                        })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                        placeholder="Insurance provider name"
-                      />
-                    ) : (
-                      <p className="text-gray-900">{user.insurance.provider || 'Not provided'}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Policy Number
-                    </label>
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        value={formData.insurance.policyNumber}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          insurance: { ...formData.insurance, policyNumber: e.target.value }
-                        })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                        placeholder="Policy number"
-                      />
-                    ) : (
-                      <p className="text-gray-900">{user.insurance.policyNumber || 'Not provided'}</p>
                     )}
                   </div>
                 </div>
